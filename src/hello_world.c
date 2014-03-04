@@ -4,8 +4,8 @@
 #define TIME_WORKED_TODAY 1
 
 Window *window;
-TextLayer *text_layer;
-char *counter; 
+TextLayer *top_text_layer;
+TextLayer *bottom_text_layer;
 char *time_str;
 
 /**
@@ -20,7 +20,6 @@ void persist_incr_int(const uint32_t key, uint32_t increment_by) {
 
 void toggle_start_stop(ClickRecognizerRef recognizer, void *context) {
 	//APP_LOG(APP_LOG_LEVEL_DEBUG, "Adding 1!");
-  //strcat(counter, "1");
   bool already_logging = persist_get_int(TIME_STARTED_WORKING) > 0;
   if (already_logging) {
     int32_t start = persist_read_int(TIME_STARTED_WORKING);
@@ -50,9 +49,9 @@ static void handle_minute_tick(struct tm *tick_time, TimeUnits units_changed) {
     int seconds_worked = time_worked % 60;
     snprintf(time_str, 25, "so far: \n %02d:%02d:%02d", 
       hours_worked, minutes_worked, seconds_worked);
-    text_layer_set_text(text_layer, time_str);
+    text_layer_set_text(top_text_layer, time_str);
   } else {
-    text_layer_set_text(text_layer, "click select to start recording");
+    text_layer_set_text(top_text_layer, "click select to start recording");
   }
 }
 
@@ -63,18 +62,15 @@ void config_provider(void *context) {
 void handle_init(void) {
 	// Create a window and text layer
 	window = window_create();
-  counter = (char*) malloc(25*sizeof(char));
+  
   time_str = (char*) malloc(25*sizeof(char));
-	text_layer = text_layer_create(GRect(0, 0, 144, 154));
+	top_text_layer = text_layer_create(GRect(0, 0, 144, 74));//154));
 	
-	// Set the text, font, and text alignment
-  strcpy(counter, "Counta!");
-	text_layer_set_text(text_layer, counter);
-	text_layer_set_font(text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
-	text_layer_set_text_alignment(text_layer, GTextAlignmentCenter);
+	text_layer_set_font(top_text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
+	text_layer_set_text_alignment(top_text_layer, GTextAlignmentCenter);
 	
 	// Add the text layer to the window
-	layer_add_child(window_get_root_layer(window), text_layer_get_layer(text_layer));
+	layer_add_child(window_get_root_layer(window), text_layer_get_layer(top_text_layer));
   // I expected to be able to write:
   // add_layer_to_window(window, layer);
 
@@ -84,8 +80,6 @@ void handle_init(void) {
   // subscribe to things
   window_set_click_config_provider(window, config_provider);
   tick_timer_service_subscribe(SECOND_UNIT, handle_minute_tick);
-
-
 	
 	// App Logging!
 	APP_LOG(APP_LOG_LEVEL_DEBUG, "Just pushed a window!");
@@ -93,7 +87,7 @@ void handle_init(void) {
 
 void handle_deinit(void) {
 	// Destroy the text layer
-	text_layer_destroy(text_layer);
+	text_layer_destroy(top_text_layer);
 	
 	// Destroy the window
 	window_destroy(window);
