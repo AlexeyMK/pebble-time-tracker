@@ -4,9 +4,7 @@
     "appKeys": {},
     "longName": "Time Tracker",
     "versionCode": 1,
-    "capabilities": [
-        ""
-    ],
+    "capabilities": ["configurable"],
     "shortName": "time-tracker",
     "companyName": "alexey@alexeymk.com",
     "watchapp": {
@@ -14,5 +12,34 @@
     },
     "resources": {
         "media": []
-    }
+    },
+    "appKeys": {
+      "subdomain": 0,
+      "username": 1,
+      "password": 2
+    },
+    "preferences": {
+        "url" : "http://google.com/",
+        "items": [{
+                "name": "subdomain",
+                "title": "Harvest Subdomain",
+                "subtitle": "if you access harvest at bobco.harvestapp.com, enter bobco",
+                "type": "string",
+                "max-length": 30,
+                "default": "bobco"
+
+        },
+        {
+                "name": "username",
+                "title": "Harvest Username",
+                "max-length": 30,
+                "type": "string"
+        },
+        {
+                "name": "password",
+                "title": "Harvest Password",
+                "max-length": 30,
+                "type": "string"
+        }]
+  }
 }
